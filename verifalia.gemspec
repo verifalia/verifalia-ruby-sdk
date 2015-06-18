@@ -17,15 +17,15 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
-  
+
   spec.extra_rdoc_files = ['README.md', 'LICENSE.md']
   spec.rdoc_options = ['--line-numbers', '--inline-source', '--title', '--main', 'README.md']
-  
+
   spec.add_dependency('builder', '>= 2.1.2')
-  spec.add_dependency('rest-client', '~> 1.7.2')
-  
+  spec.add_dependency('rest-client', '~> 1.8.0')
+
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake"
-  
-  
+
+
 end
