@@ -2,12 +2,11 @@ require 'rest_client'
 module Verifalia
   module REST
     class EmailValidations
-      
       ##
       # The Verifalia::REST::EmailValidations class allow you to comminucate
       # with Email Validations Api. You don't need to instantiate this class, but
       # use the client for autoconfiguration. # The +args+ parameter is a hash of configuration
-      # The following keys are supported: 
+      # The following keys are supported:
       #
       # === <tt>unique_id: 'example-example'</tt>
       #
@@ -17,7 +16,7 @@ module Verifalia
         @resource = RestClient::Resource.new "#{config[:host]}/#{config[:api_version]}/email-validations", account_sid, account_token
         @unique_id = args[:unique_id] if args[:unique_id]
       end
-      
+
       ##
       # Query the Email Validations Api with:
       #
@@ -40,7 +39,7 @@ module Verifalia
           false
         end
       end
-      
+
       ##
       # Query the Email Validations Api for specific result. In order to use
       # this method you need to supply unique_id uring initialization or call verify first. If request fail,
@@ -49,7 +48,7 @@ module Verifalia
       def query
         raise ArgumentError, 'You must call verify first or supply and uniqueId' unless @unique_id
         unless @response
-          begin 
+          begin
             r = @resource[@unique_id].get content_type: :json
             @response = JSON.parse(r)
             @error = nil
@@ -60,7 +59,7 @@ module Verifalia
         end
         @response
       end
-      
+
       ##
       # Destroy an Email Validations entity. In order to use
       # this method you need to supply unique_id during initialization or call verify first. If request fail,
@@ -79,20 +78,21 @@ module Verifalia
           return false
         end
       end
-      
+
       ##
       # Check if the Email validation entity is completed processed. In order to use
-      # this method you need to supply unique_id during initialization or call verify first. 
+      # this method you need to supply unique_id during initialization or call verify first.
       #
       def completed?
-        query["noOfTotalEntries"] == query["noOfCompletedEntries"]
+        query_progress = query["progress"]
+        query_progress["noOfTotalEntries"] == query_progress["noOfCompletedEntries"]
       end
-      
+
       def error
         @error
       end
-      
-      private 
+
+      private
         def compute_error(e)
           case e.response.code
             when 400
