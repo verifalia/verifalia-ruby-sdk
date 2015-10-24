@@ -3,8 +3,6 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'bundler'
 Bundler.setup
 
-Dir.glob(File.expand_path("../support/**/*.rb", __FILE__), &method(:require))
-
 require 'verifalia'
 
 RSpec.configure do |config|
