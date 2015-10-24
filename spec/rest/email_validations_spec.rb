@@ -2,29 +2,29 @@ require 'spec_helper'
 
 describe Verifalia::REST::EmailValidations do
   let(:config) { { host: 'https://api.fake.com', api_version: "v" } }
-  
+
   describe '#initialize' do
-    
+
     it 'create RestClient::Resource with correct parameters' do
       expect(RestClient::Resource).to receive(:new).with("#{config[:host]}/#{config[:api_version]}/email-validations", 'someSid', 'someToken')
       Verifalia::REST::EmailValidations.new(config, 'someSid', 'someToken')
     end
-    
+
     it 'associate RestClient::Resource to @resource' do
       resource = double()
       allow(RestClient::Resource).to receive(:new).and_return(resource)
       email_validations = Verifalia::REST::EmailValidations.new(config, 'someSid', 'someToken')
       expect(email_validations.instance_variable_get('@resource')).to eq(resource)
     end
-    
+
     it 'associate :unique_id to @unique_id' do
       unique_id = double()
       email_validations = Verifalia::REST::EmailValidations.new(config, 'someSid', 'someToken', unique_id: unique_id)
       expect(email_validations.instance_variable_get('@unique_id')).to eq(unique_id)
     end
-    
+
   end
-  
+
   context 'initialized' do
     let(:resource) { double().as_null_object }
     let(:response) { double().as_null_object }
@@ -32,17 +32,17 @@ describe Verifalia::REST::EmailValidations do
       @email_validations = Verifalia::REST::EmailValidations.new(config, 'someSid', 'someToken')
       @email_validations.instance_variable_set('@resource', resource)
     end
-    
+
     describe '#verify' do
-      
+
       it 'raise ArgumentError with nil emails' do
         expect{ @email_validations.verify(nil) }.to raise_error(ArgumentError)
       end
-      
+
       it 'raise ArgumentError with empty emails' do
         expect{ @email_validations.verify([]) }.to raise_error(ArgumentError)
       end
-      
+
       it 'call #post on @resources with correct parameters' do
         emails = ['first', 'second']
         data = emails.map { |email| { inputData: email }}
@@ -51,7 +51,7 @@ describe Verifalia::REST::EmailValidations do
         expect(JSON).to receive(:parse).with(response).and_return(response)
         @email_validations.verify(emails)
       end
-      
+
       it 'associate @unique_id and clear @response and @error' do
         emails = ['first', 'second']
         unique_id = 'fake'
@@ -63,7 +63,7 @@ describe Verifalia::REST::EmailValidations do
         expect(@email_validations.instance_variable_get('@response')).to eq(nil)
         expect(@email_validations.instance_variable_get('@error')).to eq(nil)
       end
-      
+
       it 'return @unique_id' do
         emails = ['first', 'second']
         unique_id = 'fake'
@@ -73,9 +73,9 @@ describe Verifalia::REST::EmailValidations do
         result = @email_validations.verify(emails)
         expect(result).to eq(unique_id)
       end
-      
+
       context 'request failed' do
-        
+
         it 'raise exception, call #compute_error and return false' do
           emails = ['first', 'second']
           expect(resource).to receive(:post).and_raise(RestClient::Exception)
@@ -83,20 +83,20 @@ describe Verifalia::REST::EmailValidations do
           result = @email_validations.verify(emails)
           expect(result).to eq(false)
         end
-        
+
       end
     end
-    
+
     describe '#query' do
       it 'raise ArgumentError without @unique_id' do
         expect{ @email_validations.query }.to raise_error(ArgumentError)
       end
-      
+
       context 'with @unique_id' do
         before(:each) do
           @email_validations.instance_variable_set('@unique_id', 'fake')
         end
-        
+
         it 'call #get on @resource[@uniqueId] with correct parameters' do
           request = double()
           expect(resource).to receive(:[]).with('fake').and_return(request)
@@ -104,7 +104,7 @@ describe Verifalia::REST::EmailValidations do
           expect(JSON).to receive(:parse)
           @email_validations.query
         end
-        
+
         it 'return parsed json' do
           parsed = double()
           expect(resource).to receive(:[]).with('fake')
@@ -112,9 +112,9 @@ describe Verifalia::REST::EmailValidations do
           result = @email_validations.query
           expect(result).to eq(parsed)
         end
-        
+
         context 'request failed' do
-        
+
           it 'raise exception, call #compute_error and return false' do
             request = double()
             expect(resource).to receive(:[]).with('fake').and_return(request)
@@ -124,27 +124,46 @@ describe Verifalia::REST::EmailValidations do
             expect(result).to eq(false)
           end
         end
-        
+
       end
     end
-    
+
+    describe '#completed?' do
+      let(:completed_query) do
+        { "progress"=> { "noOfTotalEntries" => 1, "noOfCompletedEntries" => 1 } }
+      end
+      let(:incompleted_query) do
+        { "progress"=> { "noOfTotalEntries" => 0, "noOfCompletedEntries" => 1 } }
+      end
+
+      it 'should return true if completed' do
+        expect(@email_validations).to receive(:query).and_return(completed_query)
+        expect(@email_validations.completed?).to be true
+      end
+
+      it 'should return false if not completed' do
+        expect(@email_validations).to receive(:query).and_return(incompleted_query)
+        expect(@email_validations.completed?).to be false
+      end
+    end
+
     describe '#destroy' do
       it 'raise ArgumentError without @unique_id' do
         expect{ @email_validations.destroy }.to raise_error(ArgumentError)
       end
-      
+
       context 'with @unique_id' do
         before(:each) do
           @email_validations.instance_variable_set('@unique_id', 'fake')
         end
-        
+
         it 'call #delete on @resource[@uniqueId]' do
           request = double()
           expect(resource).to receive(:[]).with('fake').and_return(request)
           expect(request).to receive(:delete).and_return(double().as_null_object)
           @email_validations.destroy
         end
-        
+
         it 'clear @response, @unique_id and @error' do
           request = double()
           expect(resource).to receive(:[]).with('fake').and_return(request)
@@ -157,5 +176,5 @@ describe Verifalia::REST::EmailValidations do
       end
     end
   end
-  
+
 end
