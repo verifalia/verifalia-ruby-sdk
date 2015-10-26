@@ -137,8 +137,14 @@ describe Verifalia::REST::EmailValidations do
       end
 
       it 'should return true if completed' do
+        expect(@email_validations.instance_variable_set('@response', completed_query))
         expect(@email_validations).to receive(:query).and_return(completed_query)
         expect(@email_validations.completed?).to be true
+      end
+
+      it 'should return false if @response is not initialized' do
+        expect(@email_validations).to receive(:query).and_return(completed_query)
+        expect(@email_validations.completed?).to be false
       end
 
       it 'should return false if not completed' do
