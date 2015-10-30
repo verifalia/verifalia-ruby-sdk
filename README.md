@@ -1,3 +1,4 @@
+[![Circle CI](https://circleci.com/gh/verifalia/verifalia-ruby-sdk.svg?style=shield)](https://circleci.com/gh/verifalia/verifalia-ruby-sdk)
 [![Gem Version](https://badge.fury.io/rb/verifalia.svg)](https://badge.fury.io/rb/verifalia)
 [![Dependency Status](https://gemnasium.com/verifalia/verifalia-ruby-sdk.svg)](https://gemnasium.com/verifalia/verifalia-ruby-sdk)
 [![Code Climate](https://codeclimate.com/github/verifalia/verifalia-ruby-sdk/badges/gpa.svg)](https://codeclimate.com/github/verifalia/verifalia-ruby-sdk)
