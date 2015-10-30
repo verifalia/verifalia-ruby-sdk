@@ -10,3 +10,12 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+
+if ENV["CI"]
+  require 'coveralls'
+  Coveralls.wear!
+else
+  require "simplecov"
+  SimpleCov.start
+end
+
