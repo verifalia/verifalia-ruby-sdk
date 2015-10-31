@@ -126,6 +126,28 @@ describe Verifalia::REST::EmailValidations do
         end
 
       end
+
+      context "will refresh data - on consecutive calls" do 
+        let(:incompleted_query) do
+          { "progress"=> { "noOfTotalEntries" => 0, "noOfCompletedEntries" => 1 } }
+        end
+
+        let(:completed_query) do
+          { "progress"=> { "noOfTotalEntries" => 1, "noOfCompletedEntries" => 1 } }
+        end
+
+        it "calls query API on current object if job is not finished in first call" do
+          allow(@email_validations).to receive(:query).and_return(incompleted_query)
+          @email_validations.query
+          expect(@email_validations.instance_variable_set('@response', incompleted_query))
+          expect(@email_validations.completed?).to be false
+
+          allow(@email_validations).to receive(:query).and_return(completed_query)
+          @email_validations.query
+          expect(@email_validations.instance_variable_set('@response', completed_query))
+          expect(@email_validations.completed?).to be true
+        end
+      end
     end
 
     describe '#completed?' do
