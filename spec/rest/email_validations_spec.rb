@@ -83,6 +83,15 @@ describe Verifalia::REST::EmailValidations do
           expect(result).to eq(false)
           expect(@email_validations.error).to eq(:internal_server_error)
         end
+
+        it 'raise exception, call #compute_error and return correct error' do
+          emails = ['first', 'second']
+          exception = RestClient::Exception.new(nil, 402)
+          expect(resource).to receive(:post).and_raise(exception)
+          result = @email_validations.verify(emails)
+          expect(result).to eq(false)
+          expect(@email_validations.error).to eq(:payment_required)
+        end
       end
     end
 
