@@ -94,7 +94,11 @@ module Verifalia
 
       private
         def compute_error(e)
-          case e.response.code
+          unless e.is_a? RestClient::Exception
+            @error = :internal_server_error
+          end
+
+          case e.http_code
             when 400
               @error = :bad_request
             when 401
