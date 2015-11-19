@@ -53,7 +53,7 @@ end
 ### Email Validations ###
 
 ```ruby
-#from scratch
+##from scratch
 emails = ['alice@example.com', 'bob@example.net']
 if (unique_id = @client.email_validations.verify(emails))
   #response is an hash with all the values returned
@@ -65,11 +65,18 @@ else
 end
 
 
-#with previous unique id
+##with previous unique id
 unique_id = "example-example"
 
-respone = @client.email_validations(unique_id: unique_id).query
+#query job  
+response = @client.email_validations(unique_id: unique_id).query
 
+#delete job 
 @client.email_validations(unique_id: unique_id).destroy
+
+# checking job status
+if @client.email_validations(unique_id: unique_id).completed?
+  response = @client.email_validations(unique_id: unique_id).query
+end
 
 ```
