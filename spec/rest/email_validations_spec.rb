@@ -129,22 +129,38 @@ describe Verifalia::REST::EmailValidations do
 
       context "will refresh data - on consecutive calls" do 
         let(:incompleted_query) do
-          { "progress"=> { "noOfTotalEntries" => 0, "noOfCompletedEntries" => 1 } }
+          { "progress"=> { "noOfTotalEntries" => 1, "noOfCompletedEntries" => 0 } }
         end
 
         let(:completed_query) do
           { "progress"=> { "noOfTotalEntries" => 1, "noOfCompletedEntries" => 1 } }
         end
 
-        it "calls query API on current object if job is not finished in first call" do
-          allow(@email_validations).to receive(:query).and_return(incompleted_query)
-          @email_validations.query
-          expect(@email_validations.instance_variable_set('@response', incompleted_query))
-          expect(@email_validations.completed?).to be false
+        before(:each) do 
+          @email_validations.instance_variable_set('@unique_id', 'fake')
+        end
 
-          allow(@email_validations).to receive(:query).and_return(completed_query)
-          @email_validations.query
-          expect(@email_validations.instance_variable_set('@response', completed_query))
+        it "should call the api when not completed" do
+          @email_validations.instance_variable_set('@response', incompleted_query)
+          request = double()
+          expect(resource).to receive(:[]).with('fake').and_return(request)
+          expect(request).to receive(:get).with(content_type: :json).and_return(incompleted_query.to_json)
+          expect(JSON).to receive(:parse).and_return(incompleted_query)
+          expect(@email_validations.completed?).to be false
+        end
+
+        it "should verify if completed after update results from the api" do
+          @email_validations.instance_variable_set('@response', incompleted_query)
+          request = double()
+          expect(resource).to receive(:[]).with('fake').and_return(request)
+          expect(request).to receive(:get).with(content_type: :json).and_return(completed_query.to_json)
+          expect(JSON).to receive(:parse).and_return(completed_query)
+          expect(@email_validations.completed?).to be true
+        end
+
+        it "should not call the api when completed" do
+          @email_validations.instance_variable_set('@response', completed_query)
+          expect(resource).to_not receive(:[])
           expect(@email_validations.completed?).to be true
         end
       end
@@ -155,7 +171,7 @@ describe Verifalia::REST::EmailValidations do
         { "progress"=> { "noOfTotalEntries" => 1, "noOfCompletedEntries" => 1 } }
       end
       let(:incompleted_query) do
-        { "progress"=> { "noOfTotalEntries" => 0, "noOfCompletedEntries" => 1 } }
+        { "progress"=> { "noOfTotalEntries" => 1, "noOfCompletedEntries" => 0 } }
       end
 
       it 'should return true if completed' do
