@@ -6,7 +6,14 @@ describe Verifalia::REST::EmailValidations do
   describe '#initialize' do
 
     it 'create RestClient::Resource with correct parameters' do
-      expect(RestClient::Resource).to receive(:new).with("#{config[:host]}/#{config[:api_version]}/email-validations", 'someSid', 'someToken')
+      api_url = "#{config[:host]}/#{config[:api_version]}/email-validations"
+      opts = {
+        user: 'someSid', 
+        password: 'someToken', 
+        headers: { content_type: :json }
+      }
+
+      expect(RestClient::Resource).to receive(:new).with(api_url, opts)
       Verifalia::REST::EmailValidations.new(config, 'someSid', 'someToken')
     end
 
@@ -47,7 +54,7 @@ describe Verifalia::REST::EmailValidations do
         emails = ['first', 'second']
         data = emails.map { |email| { inputData: email }}
         content = { entries: data }.to_json
-        expect(resource).to receive(:post).with(content, content_type: :json).and_return(response)
+        expect(resource).to receive(:post).with(content).and_return(response)
         expect(JSON).to receive(:parse).with(response).and_return(response)
         @email_validations.verify(emails)
       end
@@ -108,7 +115,7 @@ describe Verifalia::REST::EmailValidations do
         it 'call #get on @resource[@uniqueId] with correct parameters' do
           request = double()
           expect(resource).to receive(:[]).with('fake').and_return(request)
-          expect(request).to receive(:get).with(content_type: :json).and_return(double().as_null_object)
+          expect(request).to receive(:get).and_return(double().as_null_object)
           expect(JSON).to receive(:parse)
           @email_validations.query
         end
@@ -126,7 +133,7 @@ describe Verifalia::REST::EmailValidations do
           it 'raise exception, call #compute_error and return false' do
             request = double()
             expect(resource).to receive(:[]).with('fake').and_return(request)
-            expect(request).to receive(:get).with(content_type: :json).and_raise(RestClient::Exception)
+            expect(request).to receive(:get).and_raise(RestClient::Exception)
             expect(@email_validations).to receive(:compute_error).and_return(double())
             result = @email_validations.query
             expect(result).to eq(false)
