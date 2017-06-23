@@ -47,7 +47,7 @@ module Verifalia
       #
       def query
         raise ArgumentError, 'You must call verify first or supply and uniqueId' unless @unique_id
-        unless is_job_completed?
+        unless @response
           begin
             r = @resource[@unique_id].get
             @response = JSON.parse(r)
@@ -80,11 +80,12 @@ module Verifalia
       end
 
       ##
-      # query and check if the Email validation job is processed. In order to use
+      # Check if the Email validation entity is completed processed. In order to use
       # this method you need to supply unique_id during initialization or call verify first.
+      #
       def completed?
-        query 
-        is_job_completed?
+        query_progress = query["progress"]
+        query_progress["noOfTotalEntries"] == query_progress["noOfCompletedEntries"]
       end
 
       def error
@@ -92,16 +93,6 @@ module Verifalia
       end
 
       private
-      
-        ## 
-        # Check if the Email validation job in progress, implementation is slightly different than 
-        # completed? method, this does not query API unlike completed? method  
-        def is_job_completed?
-          return false if @response.nil?
-          query_progress = @response["progress"]
-          query_progress["noOfTotalEntries"] == query_progress["noOfCompletedEntries"]
-        end
-
         def compute_error(e)
           unless e.is_a? RestClient::Exception
             @error = :internal_server_error
