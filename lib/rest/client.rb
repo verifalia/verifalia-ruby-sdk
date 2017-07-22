@@ -19,16 +19,16 @@ module Verifalia
     # ==== @client.email_validations
     #
     class Client
-      
+
       attr_reader :account_sid, :account_token
-      
-      API_VERSION = 'v1.1'
-      
+
+      API_VERSION = 'v1.4'
+
       DEFAULTS = {
         host: 'https://api.verifalia.com',
-        api_version: 'v1.1'
+        api_version: 'v1.4'
       }
-      
+
       ##
       # Instantiate a new HTTP client to talk to Verifalia. The parameters
       # +account_sid+ and +auth_token+ are required, unless you have configured
@@ -46,17 +46,17 @@ module Verifalia
         @config = DEFAULTS.merge! options
         @account_sid = args[0] || Verifalia.account_sid
         @auth_token = args[1] || Verifalia.auth_token
-        
+
         if @account_sid.nil? || @auth_token.nil?
           raise ArgumentError, 'Account SID and auth token are required'
         end
-        
+
       end
-      
+
       ##
-      # Instantiate a new HTTP client to talk to Verifalia Email Validation Api. 
+      # Instantiate a new HTTP client to talk to Verifalia Email Validation Api.
       # The +args+ parameter is a hash of configuration
-      # The following keys are supported: 
+      # The following keys are supported:
       #
       # === <tt>unique_id: 'example-example'</tt>
       #
@@ -69,7 +69,7 @@ module Verifalia
           EmailValidations.new @config, @account_sid, @auth_token, args
         end
       end
-      
+
     end
   end
 end

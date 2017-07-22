@@ -25,10 +25,20 @@ module Verifalia
       #
       # An array of emails to validate
       #
-      def verify(emails)
-        raise ArgumentError, 'emails must be not empty' if (emails.nil? || emails.empty?)
-        data = emails.map { |email| { inputData: email }}
-        content = { entries: data }.to_json
+      def verify(inputs, options = {})
+        raise ArgumentError, 'inputs must be not empty' if (inputs.nil? || inputs.empty?)
+        raise ArgumentError, 'options must be hash' if (!options.is_a?(Hash))
+        data = inputs.map do |input|
+          if (input.is_a? String)
+            { inputData: input }
+          elsif (input.is_a? Hash)
+            raise ArgumentError, 'if inputs content is a Hash you need to supply :inputData as key' if (!input.has_key?(:inputData))
+            input
+          else
+            raise ArgumentError, 'inputs content must be a String or a Hash'
+          end
+        end
+        content = ({ entries: data }.merge(options)).to_json
         begin
           r = @resource.post content
           @unique_id = JSON.parse(r)["uniqueID"]

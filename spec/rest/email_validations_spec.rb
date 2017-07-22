@@ -51,13 +51,56 @@ describe Verifalia::REST::EmailValidations do
         expect{ @email_validations.verify([]) }.to raise_error(ArgumentError)
       end
 
-      it 'call #post on @resources with correct parameters' do
+      it 'raise ArgumentError with unvalid options' do
+        emails = ['first', 'second']
+        expect{ @email_validations.verify(emails, 'a string') }.to raise_error(ArgumentError)
+      end
+
+
+      it 'raise ArgumentError with with hash array parameters with invalid value' do
+        inputs = [
+          {
+            fakeKey: 'fake second'
+          },
+          {
+            fakeKey: 'fake second'
+          }
+        ]
+        expect{ @email_validations.verify(inputs) }.to raise_error(ArgumentError)
+      end
+
+      it 'call #post on @resources with string array parameters' do
         emails = ['first', 'second']
         data = emails.map { |email| { inputData: email }}
         content = { entries: data }.to_json
         expect(resource).to receive(:post).with(content).and_return(response)
         expect(JSON).to receive(:parse).with(response).and_return(response_json)
         @email_validations.verify(emails)
+      end
+
+      it 'call #post on @resources with string array parameters and options' do
+        emails = ['first', 'second']
+        options = { option_1: 'test' }
+        data = emails.map { |email| { inputData: email }}
+        content = { entries: data, option_1: 'test' }.to_json
+        expect(resource).to receive(:post).with(content).and_return(response)
+        expect(JSON).to receive(:parse).with(response).and_return(response_json)
+        @email_validations.verify(emails, options)
+      end
+
+      it 'call #post on @resources with hash array parameters with valid value' do
+        data = [
+          {
+            inputData: 'first'
+          },
+          {
+            inputData: 'second'
+          }
+        ]
+        content = { entries: data }.to_json
+        expect(resource).to receive(:post).with(content).and_return(response)
+        expect(JSON).to receive(:parse).with(response).and_return(response_json)
+        @email_validations.verify(data)
       end
 
       it 'associate @unique_id and clear @response and @error' do
