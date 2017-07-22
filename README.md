@@ -64,6 +64,40 @@ else
   error = @client.email_validations.error
 end
 
+##with additional email data
+emails = [
+    { inputData: 'alice@example.com', custom: 'custom data' }, #view verifalia API documentation
+    { inputData: 'bob@example.net', custom: 'custom data' } #view verifalia API documentation
+  ]
+if (unique_id = @client.email_validations.verify(emails))
+  #response is an hash with all the values returned
+  response = @client.email_validations.query
+  @client.email_validations.destroy
+else
+  #error is HTTP status code in symbol (:bad_request)
+  error = @client.email_validations.error
+end
+
+##with additional options data
+emails = [
+    { inputData: 'alice@example.com', custom: 'custom data' }, #view verifalia API documentation
+    { inputData: 'bob@example.net', custom: 'custom data' } #view verifalia API documentation
+  ]
+options = { #view verifalia API documentation
+  quality: 'high',
+  priority: 100,
+  deduplication: 'safe'
+}
+
+if (unique_id = @client.email_validations.verify(emails, options))
+  #response is an hash with all the values returned
+  response = @client.email_validations.query
+  @client.email_validations.destroy
+else
+  #error is HTTP status code in symbol (:bad_request)
+  error = @client.email_validations.error
+end
+
 
 ##with previous unique id
 unique_id = "example-example"
@@ -71,7 +105,7 @@ unique_id = "example-example"
 #query job  
 response = @client.email_validations(unique_id: unique_id).query
 
-#delete job 
+#delete job
 @client.email_validations(unique_id: unique_id).destroy
 
 # checking job status
