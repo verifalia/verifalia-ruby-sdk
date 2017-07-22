@@ -8,8 +8,8 @@ describe Verifalia::REST::EmailValidations do
     it 'create RestClient::Resource with correct parameters' do
       api_url = "#{config[:host]}/#{config[:api_version]}/email-validations"
       opts = {
-        user: 'someSid', 
-        password: 'someToken', 
+        user: 'someSid',
+        password: 'someToken',
         headers: { content_type: :json }
       }
 
@@ -35,6 +35,7 @@ describe Verifalia::REST::EmailValidations do
   context 'initialized' do
     let(:resource) { double().as_null_object }
     let(:response) { double().as_null_object }
+    let(:response_json) { double().as_null_object }
     before(:each) do
       @email_validations = Verifalia::REST::EmailValidations.new(config, 'someSid', 'someToken')
       @email_validations.instance_variable_set('@resource', resource)
@@ -55,7 +56,7 @@ describe Verifalia::REST::EmailValidations do
         data = emails.map { |email| { inputData: email }}
         content = { entries: data }.to_json
         expect(resource).to receive(:post).with(content).and_return(response)
-        expect(JSON).to receive(:parse).with(response).and_return(response)
+        expect(JSON).to receive(:parse).with(response).and_return(response_json)
         @email_validations.verify(emails)
       end
 
@@ -144,21 +145,45 @@ describe Verifalia::REST::EmailValidations do
     end
 
     describe '#completed?' do
-      let(:completed_query) do
-        { "progress"=> { "noOfTotalEntries" => 1, "noOfCompletedEntries" => 1 } }
-      end
-      let(:incompleted_query) do
-        { "progress"=> { "noOfTotalEntries" => 0, "noOfCompletedEntries" => 1 } }
+      let(:response) { double().as_null_object }
+
+      before(:each) do
+        @email_validations.instance_variable_set('@response', response)
       end
 
-      it 'should return true if completed' do
-        expect(@email_validations).to receive(:query).and_return(completed_query)
-        expect(@email_validations.completed?).to be true
+
+      context 'with 202 http code response' do
+        before(:each) do
+          allow(response).to receive(:code).and_return(202)
+          allow(@email_validations).to receive(:query).and_return({ "progress" => nil })
+        end
+
+        it 'should return false' do
+          expect(@email_validations.completed?).to be false
+        end
       end
 
-      it 'should return false if not completed' do
-        expect(@email_validations).to receive(:query).and_return(incompleted_query)
-        expect(@email_validations.completed?).to be false
+      context 'with 200 http code response' do
+        let(:completed_query) do
+          { "progress"=> { "noOfTotalEntries" => 1, "noOfCompletedEntries" => 1 } }
+        end
+        let(:incompleted_query) do
+          { "progress"=> { "noOfTotalEntries" => 0, "noOfCompletedEntries" => 1 } }
+        end
+
+        before(:each) do
+          allow(response).to receive(:code).and_return(200)
+        end
+
+        it 'should return true if completed' do
+          allow(@email_validations).to receive(:query).and_return(completed_query)
+          expect(@email_validations.completed?).to be true
+        end
+
+        it 'should return false if not completed' do
+          allow(@email_validations).to receive(:query).and_return(incompleted_query)
+          expect(@email_validations.completed?).to be false
+        end
       end
     end
 

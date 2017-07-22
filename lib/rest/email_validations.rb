@@ -33,6 +33,7 @@ module Verifalia
           @unique_id = JSON.parse(r)["uniqueID"]
           @response = nil
           @error = nil
+          @query_result = nil
           @unique_id
         rescue => e
           compute_error(e)
@@ -47,17 +48,17 @@ module Verifalia
       #
       def query
         raise ArgumentError, 'You must call verify first or supply and uniqueId' unless @unique_id
-        unless @response
+        if @response == nil || @response.code != 200
           begin
-            r = @resource[@unique_id].get
-            @response = JSON.parse(r)
+            @response = @resource[@unique_id].get
+            @query_result = JSON.parse(@response)
             @error = nil
           rescue => e
             compute_error(e)
             return false
           end
         end
-        @response
+        @query_result
       end
 
       ##
@@ -71,6 +72,7 @@ module Verifalia
           r = @resource[@unique_id].delete
           @error = nil
           @response = nil
+          @query_result = nil
           @unique_id = nil
           true
         rescue => e
@@ -85,7 +87,7 @@ module Verifalia
       #
       def completed?
         query_progress = query["progress"]
-        query_progress["noOfTotalEntries"] == query_progress["noOfCompletedEntries"]
+        @response.code == 200 && query_progress["noOfTotalEntries"] == query_progress["noOfCompletedEntries"]
       end
 
       def error
@@ -119,8 +121,8 @@ module Verifalia
         def build_resource(config, account_sid, account_token)
           api_url = "#{config[:host]}/#{config[:api_version]}/email-validations"
           opts = {
-            user: account_sid, 
-            password: account_token, 
+            user: account_sid,
+            password: account_token,
             headers: { content_type: :json }
           }
           return RestClient::Resource.new api_url, opts
