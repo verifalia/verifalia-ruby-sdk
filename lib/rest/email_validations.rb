@@ -1,4 +1,5 @@
 require 'rest_client'
+require 'json'
 module Verifalia
   module REST
     class EmailValidations
