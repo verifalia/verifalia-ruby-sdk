@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.extra_rdoc_files = ['README.md', 'LICENSE.md']
+  spec.extra_rdoc_files = ['README.md']
   spec.rdoc_options = ['--line-numbers', '--inline-source', '--title', '--main', 'README.md']
 
   spec.add_dependency('builder', '>= 2.1.2')
