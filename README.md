@@ -116,4 +116,6 @@ if @client.email_validations(unique_id: unique_id).completed?
   response = @client.email_validations(unique_id: unique_id).query
 end
 
+#checking account_balance. Remember to enable this feature in Verifalia dashboard or you get a :forbidden error
+@client.account_balance.balance
 ```
