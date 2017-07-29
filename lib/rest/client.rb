@@ -25,7 +25,7 @@ module Verifalia
       API_VERSION = 'v1.4'
 
       DEFAULTS = {
-        host: 'https://api.verifalia.com',
+        hosts: ['https://api-1.verifalia.com', 'https://api-2.verifalia.com'],
         api_version: 'v1.4'
       }
 

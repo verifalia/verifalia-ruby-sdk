@@ -87,6 +87,7 @@ module Verifalia
           @unique_id = nil
           true
         rescue => e
+          return true if (e.is_a? RestClient::Exception && e.http_code == 410)
           compute_error(e)
           return false
         end
@@ -97,8 +98,7 @@ module Verifalia
       # this method you need to supply unique_id during initialization or call verify first.
       #
       def completed?
-        query_progress = query["progress"]
-        @response.code == 200 && query_progress["noOfTotalEntries"] == query_progress["noOfCompletedEntries"]
+        @response.code == 200
       end
 
       def error
@@ -130,11 +130,15 @@ module Verifalia
         end
 
         def build_resource(config, account_sid, account_token)
-          api_url = "#{config[:host]}/#{config[:api_version]}/email-validations"
+          host = config[:hosts].shuffle.first
+          api_url = "#{host}/#{config[:api_version]}/email-validations"
           opts = {
             user: account_sid,
             password: account_token,
-            headers: { content_type: :json }
+            headers: {
+              content_type: :json,
+              user_agent: "verifalia-rest-client/ruby/#{Verifalia::VERSION}"
+            }
           }
           return RestClient::Resource.new api_url, opts
         end

@@ -1,19 +1,24 @@
 require 'spec_helper'
 
 describe Verifalia::REST::EmailValidations do
-  let(:config) { { host: 'https://api.fake.com', api_version: "v" } }
+  let(:config) { { hosts: ["https://api.fake.com"], api_version: "v" } }
 
   describe '#initialize' do
 
     it 'create RestClient::Resource with correct parameters' do
-      api_url = "#{config[:host]}/#{config[:api_version]}/email-validations"
+      api_url = "#{config[:hosts][0]}/#{config[:api_version]}/email-validations"
       opts = {
         user: 'someSid',
         password: 'someToken',
-        headers: { content_type: :json }
+        headers: { content_type: :json, user_agent: "verifalia-rest-client/ruby/#{Verifalia::VERSION}" }
       }
 
       expect(RestClient::Resource).to receive(:new).with(api_url, opts)
+      Verifalia::REST::EmailValidations.new(config, 'someSid', 'someToken')
+    end
+
+    it 'should shuffle hosts array' do
+      expect(config[:hosts]).to receive(:shuffle).and_return(["https://api.fake.com"])
       Verifalia::REST::EmailValidations.new(config, 'someSid', 'someToken')
     end
 
@@ -218,14 +223,8 @@ describe Verifalia::REST::EmailValidations do
           allow(response).to receive(:code).and_return(200)
         end
 
-        it 'should return true if completed' do
-          allow(@email_validations).to receive(:query).and_return(completed_query)
+        it 'should return true' do
           expect(@email_validations.completed?).to be true
-        end
-
-        it 'should return false if not completed' do
-          allow(@email_validations).to receive(:query).and_return(incompleted_query)
-          expect(@email_validations.completed?).to be false
         end
       end
     end

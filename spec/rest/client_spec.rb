@@ -45,10 +45,10 @@ describe Verifalia::REST::Client do
         config.auth_token = 'someToken'
       end
 
-      client = Verifalia::REST::Client.new :host => 'api.fake.com'
+      client = Verifalia::REST::Client.new :hosts => ['api.fake.com']
 
       config = client.instance_variable_get('@config')
-      expect(config[:host]).to eq('api.fake.com')
+      expect(config[:hosts]).to eq(['api.fake.com'])
     end
 
     it 'should throw an argument error if the sid and token isn\'t set' do
@@ -59,7 +59,7 @@ describe Verifalia::REST::Client do
       expect { Verifalia::REST::Client.new 'someSid' }.to raise_error(ArgumentError)
     end
   end
-  
+
   describe '#email_validations' do
     before(:each) do
       Verifalia.configure do |config|
@@ -68,7 +68,7 @@ describe Verifalia::REST::Client do
       end
       @client = Verifalia::REST::Client.new
     end
-    
+
     context 'without parameters' do
       it 'call #new on Verifalia::REST::EmailValidations with correct paramenters' do
         config = @client.instance_variable_get('@config')
@@ -76,7 +76,7 @@ describe Verifalia::REST::Client do
         @client.email_validations
       end
     end
-    
+
     context 'with parameter' do
       it 'call #new on Verifalia::REST::EmailValidations with correct paramenters' do
         config = @client.instance_variable_get('@config')
