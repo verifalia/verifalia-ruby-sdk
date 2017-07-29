@@ -3,6 +3,9 @@ require 'json'
 module Verifalia
   module REST
     class EmailValidations
+
+      COMPLETITION_MAX_RETRY = 5
+      COMPLETITION_INTERVAL = 1
       ##
       # The Verifalia::REST::EmailValidations class allow you to comminucate
       # with Email Validations Api. You don't need to instantiate this class, but
@@ -21,7 +24,9 @@ module Verifalia
       ##
       # Query the Email Validations Api with:
       #
-      # === <tt> emails: ['test@test.com']
+      # === <tt> inputs: ['test@test.com']
+      # === <tt> inputs: data = [{ inputData: 'first@first.it' }, { inputData: 'first@first.it' } ]
+      # === <tt> options: { quality: 'high', priority: 100, deduplication: 'safe' } view verifalia API documentation
       #
       # An array of emails to validate
       #
@@ -40,11 +45,10 @@ module Verifalia
         end
         content = ({ entries: data }.merge(options)).to_json
         begin
-          r = @resource.post content
-          @unique_id = JSON.parse(r)["uniqueID"]
-          @response = nil
+          @response = @resource.post content
+          @query_result = JSON.parse(@response)
+          @unique_id = @query_result["uniqueID"]
           @error = nil
-          @query_result = nil
           @unique_id
         rescue => e
           compute_error(e)
@@ -57,13 +61,27 @@ module Verifalia
       # this method you need to supply unique_id uring initialization or call verify first. If request fail,
       # you can call <tt>error</tt> to receive detailed information
       #
-      def query
+      # === <tt> options: { wait_for_completion: true, completition_max_retry: 5, completition_interval: 1(seconds) }
+      def query(options = {})
         raise ArgumentError, 'You must call verify first or supply and uniqueId' unless @unique_id
-        if @response == nil || @response.code != 200
+        opts = {
+          wait_for_completion: false,
+          completition_max_retry: COMPLETITION_MAX_RETRY,
+          completition_interval: COMPLETITION_INTERVAL,
+          }
+          .merge! options
+        if @response == nil || !completed?
           begin
-            @response = @resource[@unique_id].get
-            @query_result = JSON.parse(@response)
-            @error = nil
+            loop_count = 0
+            resource =  @resource[@unique_id]
+            loop do
+              @response = resource.get
+              @query_result = JSON.parse(@response)
+              @error = nil
+              loop_count += 1
+              sleep opts[:completition_interval] if opts[:wait_for_completion]
+              break if !opts[:wait_for_completion] || (completed? || loop_count >= opts[:completition_max_retry])
+            end
           rescue => e
             compute_error(e)
             return false

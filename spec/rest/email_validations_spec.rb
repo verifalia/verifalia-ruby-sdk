@@ -108,7 +108,7 @@ describe Verifalia::REST::EmailValidations do
         @email_validations.verify(data)
       end
 
-      it 'associate @unique_id and clear @response and @error' do
+      it 'associate @unique_id' do
         emails = ['first', 'second']
         unique_id = 'fake'
         parsed = double()
@@ -116,8 +116,6 @@ describe Verifalia::REST::EmailValidations do
         expect(parsed).to receive(:[]).with("uniqueID").and_return(unique_id)
         @email_validations.verify(emails)
         expect(@email_validations.instance_variable_get('@unique_id')).to eq(unique_id)
-        expect(@email_validations.instance_variable_get('@response')).to eq(nil)
-        expect(@email_validations.instance_variable_get('@error')).to eq(nil)
       end
 
       it 'return @unique_id' do
@@ -175,6 +173,16 @@ describe Verifalia::REST::EmailValidations do
           expect(JSON).to receive(:parse).and_return(parsed)
           result = @email_validations.query
           expect(result).to eq(parsed)
+        end
+
+        context 'with completition' do
+          it 'call #get on @resource[@uniqueId] multiple time' do
+            request = double()
+            expect(resource).to receive(:[]).with('fake').and_return(request)
+            expect(request).to receive(:get).twice.and_return(double().as_null_object)
+            allow(JSON).to receive(:parse)
+            @email_validations.query(wait_for_completion: true, completition_max_retry: 2)
+          end
         end
 
         context 'request failed' do
