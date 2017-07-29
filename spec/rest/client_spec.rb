@@ -85,4 +85,21 @@ describe Verifalia::REST::Client do
       end
     end
   end
+
+
+  describe '#account_balance' do
+    before(:each) do
+      Verifalia.configure do |config|
+        config.account_sid = 'someSid'
+        config.auth_token = 'someToken'
+      end
+      @client = Verifalia::REST::Client.new
+    end
+
+    it 'call #new on Verifalia::REST::AccountBalance with correct paramenters' do
+      config = @client.instance_variable_get('@config')
+      expect(Verifalia::REST::AccountBalance).to receive(:new).with(config, 'someSid', 'someToken')
+      @client.account_balance
+    end
+  end
 end

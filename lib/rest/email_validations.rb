@@ -4,8 +4,8 @@ module Verifalia
   module REST
     class EmailValidations
 
-      COMPLETITION_MAX_RETRY = 5
-      COMPLETITION_INTERVAL = 1
+      COMPLETION_MAX_RETRY = 5
+      COMPLETION_INTERVAL = 1
       ##
       # The Verifalia::REST::EmailValidations class allow you to comminucate
       # with Email Validations Api. You don't need to instantiate this class, but
@@ -61,13 +61,13 @@ module Verifalia
       # this method you need to supply unique_id uring initialization or call verify first. If request fail,
       # you can call <tt>error</tt> to receive detailed information
       #
-      # === <tt> options: { wait_for_completion: true, completition_max_retry: 5, completition_interval: 1(seconds) }
+      # === <tt> options: { wait_for_completion: true, completion_max_retry: 5, completion_interval: 1(seconds) }
       def query(options = {})
         raise ArgumentError, 'You must call verify first or supply and uniqueId' unless @unique_id
         opts = {
           wait_for_completion: false,
-          completition_max_retry: COMPLETITION_MAX_RETRY,
-          completition_interval: COMPLETITION_INTERVAL,
+          completion_max_retry: COMPLETION_MAX_RETRY,
+          completion_interval: COMPLETION_INTERVAL,
           }
           .merge! options
         if @response == nil || !completed?
@@ -79,15 +79,20 @@ module Verifalia
               @query_result = JSON.parse(@response)
               @error = nil
               loop_count += 1
-              sleep opts[:completition_interval] if opts[:wait_for_completion]
-              break if !opts[:wait_for_completion] || (completed? || loop_count >= opts[:completition_max_retry])
+              sleep opts[:completion_interval] if opts[:wait_for_completion]
+              break if !opts[:wait_for_completion] || (completed? || loop_count >= opts[:completion_max_retry])
             end
           rescue => e
             compute_error(e)
             return false
           end
         end
-        @query_result
+        if (opts[:wait_for_completion] && !completed?)
+          @error = :not_completed
+          false
+        else
+          @query_result
+        end
       end
 
       ##
@@ -136,6 +141,8 @@ module Verifalia
               @error = :unauthorized
             when 402
               @error = :payment_required
+            when 403
+              @error = :forbidden
             when 404
               @error = :not_found
             when 406

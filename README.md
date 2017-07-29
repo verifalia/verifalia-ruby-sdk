@@ -92,11 +92,14 @@ options = { #view verifalia API documentation
 if (unique_id = @client.email_validations.verify(emails, options))
   #response is an hash with all the values returned
   response = @client.email_validations.query
-  @client.email_validations.destroy
+  @client.email_validations.destroy #destroy the job on the Verifalia server
 else
   #error is HTTP status code in symbol (:bad_request)
   error = @client.email_validations.error
 end
+
+#you can wait for job completion using options on query
+response = @client.email_validations.query(wait_for_completion: true, completion_max_retry: 2, completion_interval: 1)
 
 
 ##with previous unique id

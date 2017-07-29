@@ -175,13 +175,13 @@ describe Verifalia::REST::EmailValidations do
           expect(result).to eq(parsed)
         end
 
-        context 'with completition' do
+        context 'with completion' do
           it 'call #get on @resource[@uniqueId] multiple time' do
             request = double()
             expect(resource).to receive(:[]).with('fake').and_return(request)
             expect(request).to receive(:get).twice.and_return(double().as_null_object)
             allow(JSON).to receive(:parse)
-            @email_validations.query(wait_for_completion: true, completition_max_retry: 2)
+            @email_validations.query(wait_for_completion: true, completion_max_retry: 2)
           end
         end
 

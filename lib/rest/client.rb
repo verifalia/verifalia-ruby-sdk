@@ -1,4 +1,5 @@
 require 'rest/email_validations'
+require 'rest/account_balance'
 
 module Verifalia
   module REST
@@ -68,6 +69,13 @@ module Verifalia
         else
           EmailValidations.new @config, @account_sid, @auth_token, args
         end
+      end
+
+      ##
+      # Instantiate a new HTTP client to talk to Verifalia Account Balance Api.
+      #
+      def account_balance()
+        @account_balance ||= AccountBalance.new @config, @account_sid, @auth_token
       end
 
     end
