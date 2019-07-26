@@ -1,9 +1,6 @@
-[![Circle CI](https://circleci.com/gh/verifalia/verifalia-ruby-sdk.svg?style=shield)](https://circleci.com/gh/verifalia/verifalia-ruby-sdk)
+![Verifalia API](https://img.shields.io/badge/Verifalia%20API-v1.4-green)
 [![Gem Version](https://badge.fury.io/rb/verifalia.svg)](https://badge.fury.io/rb/verifalia)
-[![Dependency Status](https://gemnasium.com/verifalia/verifalia-ruby-sdk.svg)](https://gemnasium.com/verifalia/verifalia-ruby-sdk)
-[![Code Climate](https://codeclimate.com/github/verifalia/verifalia-ruby-sdk/badges/gpa.svg)](https://codeclimate.com/github/verifalia/verifalia-ruby-sdk)
-[![Coverage Status](https://coveralls.io/repos/verifalia/verifalia-ruby-sdk/badge.svg?branch=master&service=github)](https://coveralls.io/github/verifalia/verifalia-ruby-sdk?branch=master)
-[![Inline docs](http://inch-ci.org/github/verifalia/verifalia-ruby-sdk.svg?branch=master)](http://inch-ci.org/github/verifalia/verifalia-ruby-sdk)
+[![Circle CI](https://circleci.com/gh/verifalia/verifalia-ruby-sdk.svg?style=shield)](https://circleci.com/gh/verifalia/verifalia-ruby-sdk)
 
 # Verifalia RESTful API - Ruby gem
 
