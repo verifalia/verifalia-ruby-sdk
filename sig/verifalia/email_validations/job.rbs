@@ -1,0 +1,13 @@
+module Verifalia
+  module EmailValidations
+    class Job
+      @entries: Array[Entry]
+      @overview: Overview
+
+      def self.from_json: (Hash[String, untyped]) -> Job
+
+      attr_reader entries: Array[Entry]
+      attr_reader overview: Overview
+    end
+  end
+end

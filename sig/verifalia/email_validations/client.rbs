@@ -1,0 +1,23 @@
+module Verifalia
+  module EmailValidations
+    class Client
+      @rest_client: Rest::Client
+
+      def delete: (String) -> void
+      def get: (Integer, wait_options: WaitOptions) -> (Job | nil)
+      def submit: ((String | Array[String] | Array[RequestEntry] | Array[Hash[String, untyped]] | RequestEntry | Request),
+          quality: String,
+          priority: (Integer | nil),
+          deduplication: String,
+          name: String,
+          retention: String,
+          callback: CompletionCallback | Hash[String, untyped] | nil,
+          wait_options: WaitOptions) -> (Job | nil)
+
+      private
+
+      def build_job: -> Job
+      def wait_for_completion: (Job, WaitOptions) -> (Job | nil)
+    end
+  end
+end

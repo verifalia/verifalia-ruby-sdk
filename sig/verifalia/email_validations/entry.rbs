@@ -1,0 +1,22 @@
+module Verifalia
+  module EmailValidations
+    class Entry
+      attr_reader completed_on: DateTime
+      attr_reader custom: String | nil
+      attr_reader duplicate_of: Integer | nil
+      attr_reader email_address: String | nil
+      attr_reader email_address_domain_part: String | nil
+      attr_reader email_address_local_part: String | nil
+      attr_reader has_international_domain_name: bool | nil
+      attr_reader has_international_mailbox_name: bool | nil
+      attr_reader index: Integer
+      attr_reader input_data: String
+      attr_reader classification: String
+      attr_reader is_disposable_email_address: bool | nil
+      attr_reader is_free_email_address: bool | nil
+      attr_reader is_role_account: bool | nil
+      attr_reader status: String
+      attr_reader syntax_failure_index: Integer | nil
+    end
+  end
+end

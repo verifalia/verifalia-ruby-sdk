@@ -1,0 +1,6 @@
+module Verifalia
+  module Rest
+    BASE_CCA_URLS: Array[String]
+    BASE_URLS: Array[String]
+  end
+end

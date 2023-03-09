@@ -1,27 +1,11 @@
-require 'builder'
-require 'forwardable'
+# frozen_string_literal: true
 
-require 'verifalia/version'
-require 'verifalia/util/configuration'
+require_relative 'verifalia/client'
 
-require 'rest/client'
+require_relative 'verifalia/security/username_password_authenticator'
+require_relative 'verifalia/security/certificate_authenticator'
+
+require_relative 'verifalia/email_validation/client'
 
 module Verifalia
-  extend SingleForwardable
-
-  def_delegators :configuration, :account_sid, :auth_token
-
-  ##
-  # Pre-configure with account SID and auth token so that you don't need to
-  # pass them to various initializers each time.
-  def self.configure(&block)
-    yield configuration
-  end
-
-  ##
-  # Returns an existing or instantiates a new configuration object.
-  def self.configuration
-    @configuration ||= Util::Configuration.new
-  end
-  private_class_method :configuration
 end

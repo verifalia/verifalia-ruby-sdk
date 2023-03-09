@@ -1,0 +1,12 @@
+module Verifalia
+  module Rest
+    class Client
+      @base_urls: Array[String]
+      @current_base_url_idx: Integer
+
+      @user_agent: String
+
+      def invoke: (String, String, (Hash[String, untyped] | nil)) -> untyped # Faraday::Response
+    end
+  end
+end

@@ -1,0 +1,8 @@
+module Verifalia
+  module EmailValidations
+    class RequestEntry
+      attr_accessor custom: String
+      attr_accessor input_data: String
+    end
+  end
+end

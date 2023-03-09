@@ -1,0 +1,19 @@
+module Verifalia
+  module EmailValidations
+    class WaitOptions
+      @@default: WaitOptions
+      @@no_wait: WaitOptions
+      @submission_wait_time: Integer
+      @poll_wait_time: Integer
+
+      def self.default: -> WaitOptions
+      def self.no_wait: -> WaitOptions
+
+      attr_reader poll_wait_time: Integer
+      attr_reader submission_wait_time: Integer
+
+      def initialize: (Integer, Integer) -> WaitOptions
+      def wait_for_next_poll: (Job) -> void
+    end
+  end
+end

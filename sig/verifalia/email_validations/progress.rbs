@@ -1,0 +1,8 @@
+module Verifalia
+  module EmailValidations
+    class Progress
+      attr_reader estimated_time_remaining: String
+      attr_reader percentage: Float
+    end
+  end
+end

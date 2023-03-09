@@ -1,0 +1,13 @@
+module Verifalia
+  module EmailValidations
+    class Request
+      attr_accessor callback: CompletionCallback | nil
+      attr_accessor deduplication: String | nil
+      attr_accessor entries: Array[RequestEntry]
+      attr_accessor name: String | nil
+      attr_accessor priority: Integer | nil
+      attr_accessor quality: String | nil
+      attr_accessor retention: String | nil
+    end
+  end
+end

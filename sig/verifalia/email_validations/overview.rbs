@@ -1,0 +1,20 @@
+module Verifalia
+  module EmailValidations
+    class Overview
+      attr_reader client_ip: IPAddr
+      attr_reader completed_on: (DateTime | nil)
+      attr_reader created_on: DateTime
+      attr_reader deduplication: String
+      attr_reader id: String
+      attr_reader name: String
+      attr_reader no_of_entries: Integer
+      attr_reader owner: String
+      attr_reader priority: (Integer | nil)
+      attr_reader progress: (Progress | nil)
+      attr_reader quality: String
+      attr_reader retention: String
+      attr_reader status: String
+      attr_reader submitted_on: DateTime
+    end
+  end
+end

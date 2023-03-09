@@ -1,0 +1,5 @@
+class CompletionCallback
+  attr_accessor skip_server_certificate_validation: bool | nil
+  attr_accessor url: String
+  attr_accessor version: String | nil
+end
