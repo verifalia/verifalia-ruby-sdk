@@ -4,8 +4,13 @@ require 'ipaddr'
 
 module Verifalia
   module EmailValidations
+    # Represents a snapshot of an email validation job, along with its overview and eventual validated entries.
     class Job
-      attr_reader :overview, :entries
+      # Overview information for this email validation job.
+      attr_reader :overview
+
+      # The eventual validated items for this email validation job.
+      attr_reader :entries
 
       def initialize(overview, entries)
         @overview = overview
@@ -44,8 +49,7 @@ module Verifalia
 
         if data.key?('entries')
           entries = data['entries']['data'].map do |entry|
-            Entry.new entry['index'],
-                      entry['inputData'],
+            Entry.new entry['inputData'],
                       entry['classification'],
                       entry['status'],
                       entry['emailAddress'],
@@ -59,7 +63,8 @@ module Verifalia
                       (entry['syntaxFailureIndex'] if entry.key?('syntaxFailureIndex')),
                       entry['custom'],
                       (entry['duplicateOf'] if entry.key?('duplicateOf')),
-                      DateTime.iso8601(entry['completedOn'])
+                      DateTime.iso8601(entry['completedOn']),
+                      entry['asciiEmailAddressDomainPart']
           end
         end
 

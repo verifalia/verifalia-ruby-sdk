@@ -77,33 +77,34 @@ module Verifalia
 
         wait_options_or_default = wait_options.nil? ? WaitOptions.default : wait_options
 
+        payload = {
+          entries: data.entries.map do |entry|
+            {
+              inputData: entry.input_data,
+              custom: entry.custom
+            }
+          end,
+          quality: quality,
+          priority: priority,
+          deduplication: deduplication,
+          name: name,
+          retention: retention,
+          callback: ({
+            url: completion_callback&.url,
+            version: completion_callback&.version,
+            skipServerCertificateValidation: completion_callback&.skip_server_certificate_validation
+          } unless completion_callback.nil?)
+        }.compact.to_json
+
         response = @rest_client.invoke 'post',
                                        "email-validations?waitTime=#{wait_options_or_default.submission_wait_time}",
                                        {
-                                         body: {
-                                           entries: data.entries.map do |entry|
-                                             {
-                                               inputData: entry.input_data,
-                                               custom: entry.custom
-                                             }
-                                           end,
-                                           quality: quality,
-                                           priority: priority,
-                                           deduplication: deduplication,
-                                           name: name,
-                                           retention: retention,
-                                           callback: ({
-                                             url: completion_callback&.url,
-                                             version: completion_callback&.version,
-                                             skipServerCertificateValidation: completion_callback&.skip_server_certificate_validation
-                                           } unless completion_callback.nil?)
-                                         }.to_json,
-                                         headers: 
+                                         body: payload,
+                                         headers:
                                            {
                                              'Content-Type': 'application/json',
                                              'Accept': 'application/json'
                                            }
-                                         
                                        }
 
         if response.status == 202 || response.status == 200
