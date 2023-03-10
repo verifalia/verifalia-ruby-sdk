@@ -4,7 +4,8 @@ module Verifalia
       @rest_client: Rest::Client
 
       def delete: (String) -> void
-      def get: (Integer, wait_options: WaitOptions) -> (Job | nil)
+      def export: (String, String) -> String
+      def get: (String, wait_options: WaitOptions) -> (Job | nil)
       def submit: ((String | Array[String] | Array[RequestEntry] | Array[Hash[String, untyped]] | RequestEntry | Request),
           quality: String,
           priority: (Integer | nil),

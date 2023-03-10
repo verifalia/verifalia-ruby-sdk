@@ -16,6 +16,18 @@ module Verifalia
     attr_reader :credits
 
     # Initializes a new HTTPS-based REST client for Verifalia with the specified options.
+    #
+    # While authenticating with your Verifalia main account credentials is possible, it is strongly advised to create
+    # one or more users (formerly known as sub-accounts) with just the required permissions, for improved security.
+    # To create a new user or manage existing ones, please visit 'https://verifalia.com/client-area#/users'
+    #
+    # @param [nil] authenticator A custom authenticator the client will use to authenticate against the Verifalia API.
+    # @param [nil] username The user-name used to authenticate against the Verifalia API using basic auth.
+    # @param [nil] password The password used to authenticate against the Verifalia API using basic auth.
+    # @param [nil] ssl_client_cert The X.509 client certificate used to authenticate against the Verifalia API using mutual TLS authentication. Available to premium Verifalia plans only.
+    # @param [nil] ssl_client_key The private key used to authenticate against the Verifalia API using mutual TLS authentication. Available to premium Verifalia plans only.
+    # @param [nil] base_urls Alternative base URLs to use while connecting against the Verifalia API.
+    # @param [nil] logger A logger where to write diagnostics messages, useful while debugging.
     def initialize(authenticator: nil, username: nil, password: nil, ssl_client_cert: nil, ssl_client_key: nil, base_urls: nil, logger: nil)
       @base_urls = base_urls
 

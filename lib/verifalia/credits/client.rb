@@ -11,6 +11,7 @@ module Verifalia
       end
 
       # Returns the current credits balance for the Verifalia account.
+      # @return [Verifalia::Credits::Balance] The account balance.
       def get_balance
         response = @rest_client.invoke 'get',
                                        'credits/balance'
