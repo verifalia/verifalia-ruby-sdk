@@ -297,7 +297,7 @@ puts "Free daily credits: #{balance.free_credits} (will reset in #{balance.free_
 # Free daily credits: 128.66 (will reset in 09:08:23)
 ```
 
-To add credit packs to your Verifalia account visit [https://verifalia.com/client-area#/credits/add][5].
+To add credit packs to your Verifalia account visit [https://verifalia.com/client-area#/credits/add](https://verifalia.com/client-area#/credits/add).
 
 ## Changelog / What's new
 
@@ -306,7 +306,7 @@ please see the [project releases](https://github.com/verifalia/verifalia-ruby-sd
 
 ### v2.0
 
-Released on March 13<sup>th</sup>, 2023
+Released on TBD, 2023
 
 - Added support for API v2.4
 - Added support for new completion callback options
