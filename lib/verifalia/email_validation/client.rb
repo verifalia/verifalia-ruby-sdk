@@ -89,11 +89,15 @@ module Verifalia
           deduplication: deduplication,
           name: name,
           retention: retention,
-          callback: ({
-            url: completion_callback&.url,
-            version: completion_callback&.version,
-            skipServerCertificateValidation: completion_callback&.skip_server_certificate_validation
-          } unless completion_callback.nil?)
+          callback: (
+            unless completion_callback.nil?
+              {
+                url: completion_callback&.url,
+                version: completion_callback&.version,
+                skipServerCertificateValidation: completion_callback&.skip_server_certificate_validation
+              }
+            end
+          )
         }.compact.to_json
 
         response = @rest_client.invoke 'post',
