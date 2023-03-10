@@ -10,6 +10,7 @@ require_relative 'request_entry'
 
 module Verifalia
   module EmailValidations
+    # Allows to verify email addresses and manage email verification jobs using the Verifalia service.
     class Client
       def initialize(rest_client)
         @rest_client = rest_client
