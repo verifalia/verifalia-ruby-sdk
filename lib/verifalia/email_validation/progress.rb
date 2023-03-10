@@ -10,7 +10,7 @@ module Verifalia
       # for huge lists requiring more than 24 hours to complete.
       attr_reader :estimated_time_remaining
 
-      def initialize (percentage, estimated_time_remaining)
+      def initialize(percentage, estimated_time_remaining)
         @percentage = percentage
         @estimated_time_remaining = estimated_time_remaining
       end

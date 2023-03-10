@@ -7,6 +7,7 @@ require_relative 'entry'
 require_relative 'wait_options'
 require_relative 'request'
 require_relative 'request_entry'
+require_relative 'completion_callback'
 
 module Verifalia
   module EmailValidations
@@ -26,43 +27,50 @@ module Verifalia
                  deduplication: nil,
                  name: nil,
                  retention: nil,
-                 callback: nil,
+                 completion_callback: nil,
                  wait_options: nil)
         # Determine how to handle the submission, based on the type of the argument
 
         if data.nil?
           raise "data can't be nil."
-        elsif String === data
+        elsif data.is_a?(String)
           data = Request.new [(RequestEntry.new data)],
                              quality: quality
         elsif data.is_a? Enumerable
           entries = data.map do |entry|
-            if String === entry
+            case entry
+            when String
               # data is an Array[String]
               RequestEntry.new entry.to_s
-            elsif RequestEntry === entry
+            when RequestEntry
               # data is an Array[RequestEntry]
               entry
-            elsif Hash === entry
+            when Hash
               # data is an Array[{ :inputData, :custom }]
 
-              if !entry.has_key?(:input_data)
-                raise "Input hash must have an :inputData key."
-              end
+              raise 'Input hash must have an :inputData key.' unless entry.key?(:input_data)
 
               RequestEntry.new entry[:input_data], entry[:custom]
             else
-              raise "Cannot map input data."
+              raise 'Cannot map input data.'
             end
           end
 
           data = Request.new entries,
                              quality: quality
-        elsif RequestEntry === data
+        elsif data.is_a?(RequestEntry)
           data = Request.new data,
                              quality: quality
-        elsif !(Request === data)
+        elsif !data.is_a?(Request)
           raise "Unsupported data type #{data.class}"
+        end
+
+        # Completion callback
+
+        if completion_callback.is_a?(Hash)
+          completion_callback = Verifalia::EmailValidations::CompletionCallback.new(completion_callback['url'],
+                                                                                    completion_callback['version'],
+                                                                                    completion_callback['skip_server_certificate_validation'])
         end
 
         # Send the request to the Verifalia API
@@ -72,12 +80,12 @@ module Verifalia
         response = @rest_client.invoke 'post',
                                        "email-validations?waitTime=#{wait_options_or_default.submission_wait_time}",
                                        {
-                                         body: ({
+                                         body: {
                                            entries: data.entries.map do |entry|
-                                             ({
+                                             {
                                                inputData: entry.input_data,
                                                custom: entry.custom
-                                             })
+                                             }
                                            end,
                                            quality: quality,
                                            priority: priority,
@@ -85,25 +93,23 @@ module Verifalia
                                            name: name,
                                            retention: retention,
                                            callback: ({
-                                             url: callback.url,
-                                             version: callback.version,
-                                             skipServerCertificateValidation: skip_server_certificate_validation
-                                           } unless callback.nil?)
-                                         }).to_json,
-                                         headers: (
+                                             url: completion_callback&.url,
+                                             version: completion_callback&.version,
+                                             skipServerCertificateValidation: completion_callback&.skip_server_certificate_validation
+                                           } unless completion_callback.nil?)
+                                         }.to_json,
+                                         headers: 
                                            {
                                              'Content-Type': 'application/json',
                                              'Accept': 'application/json'
                                            }
-                                         )
+                                         
                                        }
 
         if response.status == 202 || response.status == 200
-          job = Job::from_json(JSON.parse(response.body))
+          job = Job.from_json(JSON.parse(response.body))
 
-          if wait_options_or_default == WaitOptions.no_wait || job.overview.status == 'Completed'
-            return job
-          end
+          return job if wait_options_or_default == WaitOptions.no_wait || job.overview.status == 'Completed'
 
           return wait_for_completion(job, wait_options_or_default)
         end
@@ -121,16 +127,12 @@ module Verifalia
         response = @rest_client.invoke 'get',
                                        "email-validations/#{id}?waitTime=#{wait_options_or_default.poll_wait_time}"
 
-        if response.status == 404 || response.status == 410
-          return nil
-        end
+        return nil if response.status == 404 || response.status == 410
 
         if response.status == 202 || response.status == 200
-          job = Job::from_json(JSON.parse(response.body))
+          job = Job.from_json(JSON.parse(response.body))
 
-          if wait_options_or_default == WaitOptions.no_wait || job.overview.status == 'Completed'
-            return job
-          end
+          return job if wait_options_or_default == WaitOptions.no_wait || job.overview.status == 'Completed'
 
           return wait_for_completion(job, wait_options_or_default)
         end
@@ -143,9 +145,7 @@ module Verifalia
         response = @rest_client.invoke 'delete',
                                        "email-validations/#{id}"
 
-        if response.status == 200 || response.status == 410
-          return
-        end
+        return if response.status == 200 || response.status == 410
 
         raise "Unexpected HTTP response: #{response.status} #{response.body}"
       end
@@ -154,19 +154,18 @@ module Verifalia
 
       def wait_for_completion(job, wait_options)
         loop do
-          # TODO: Report progress
+          # Fires a progress, since we are not yet completed
+
+          wait_options.progress&.call(job.overview)
+
+          # Wait for the next polling schedule
 
           wait_options.wait_for_next_poll(job)
 
           job = get(job.overview.id, wait_options: wait_options)
 
-          if job.nil?
-            return nil
-          end
-
-          if job.overview.status == 'Completed'
-            return job
-          end
+          return nil if job.nil?
+          return job unless job.overview.status == 'InProgress'
         end
       end
     end

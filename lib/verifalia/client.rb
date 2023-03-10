@@ -6,7 +6,7 @@ require_relative './rest/client'
 module Verifalia
   class Client
     # The version of the Verifalia SDK for Ruby.
-    VERSION = "2.0.0-beta"
+    VERSION = '2.0.0-beta'
 
     # Allows to verify email addresses and manage email verification jobs using the Verifalia service.
     attr_reader :email_validations
@@ -17,9 +17,9 @@ module Verifalia
 
       if !authenticator.nil?
         @authenticator = authenticator
-      elsif !username.nil? then
+      elsif !username.nil?
         @authenticator = Verifalia::Security::UsernamePasswordAuthenticator.new(username, password)
-      elsif !ssl_client_cert.nil? then
+      elsif !ssl_client_cert.nil?
         @authenticator = Verifalia::Security::CertificateAuthenticator.new(ssl_client_cert, ssl_client_key)
         @base_urls ||= Verifalia::Rest::BASE_CCA_URLS
       else

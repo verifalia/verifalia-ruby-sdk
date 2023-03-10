@@ -11,7 +11,7 @@ module Verifalia
           deduplication: String,
           name: String,
           retention: String,
-          callback: CompletionCallback | Hash[String, untyped] | nil,
+          completion_callback: CompletionCallback | Hash[String, untyped] | nil,
           wait_options: WaitOptions) -> (Job | nil)
 
       private

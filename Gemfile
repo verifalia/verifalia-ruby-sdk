@@ -1,9 +1,9 @@
-source 'https://rubygems.org'
+# frozen_string_literal: true
+
+source "https://rubygems.org"
 
 # Specify your gem's dependencies in verifalia.gemspec
 gemspec
 
-group :test do
-  gem 'rspec', '~> 3.0'
-  gem 'coveralls', require: false
-end
+gem "rake", "~> 13.0"
+gem "rubocop", "~> 1.21"

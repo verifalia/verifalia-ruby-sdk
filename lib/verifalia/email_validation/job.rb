@@ -42,25 +42,26 @@ module Verifalia
 
         # Parse the eventual entries
 
-        entries = data['entries']['data'].map do |entry|
-          Entry.new entry['index'],
-                    entry['inputData'],
-                    entry['classification'],
-                    entry['status'],
-                    entry['emailAddress'],
-                    entry['emailAddressLocalPart'],
-                    entry['emailAddressDomainPart'],
-                    (entry['hasInternationalMailboxName'] if entry.key?('hasInternationalMailboxName')),
-                    (entry['hasInternationalDomainName'] if entry.key?('hasInternationalDomainName')),
-                    (entry['isDisposableEmailAddress'] if entry.key?('isDisposableEmailAddress')),
-                    (entry['isRoleAccount'] if entry.key?('isRoleAccount')),
-                    (entry['isFreeEmailAddress'] if entry.key?('isFreeEmailAddress')),
-                    (entry['syntaxFailureIndex'] if entry.key?('syntaxFailureIndex')),
-                    entry['custom'],
-                    (entry['duplicateOf'] if entry.key?('duplicateOf')),
-                    DateTime.iso8601(entry['completedOn'])
-
-        end if data.key?('entries')
+        if data.key?('entries')
+          entries = data['entries']['data'].map do |entry|
+            Entry.new entry['index'],
+                      entry['inputData'],
+                      entry['classification'],
+                      entry['status'],
+                      entry['emailAddress'],
+                      entry['emailAddressLocalPart'],
+                      entry['emailAddressDomainPart'],
+                      (entry['hasInternationalMailboxName'] if entry.key?('hasInternationalMailboxName')),
+                      (entry['hasInternationalDomainName'] if entry.key?('hasInternationalDomainName')),
+                      (entry['isDisposableEmailAddress'] if entry.key?('isDisposableEmailAddress')),
+                      (entry['isRoleAccount'] if entry.key?('isRoleAccount')),
+                      (entry['isFreeEmailAddress'] if entry.key?('isFreeEmailAddress')),
+                      (entry['syntaxFailureIndex'] if entry.key?('syntaxFailureIndex')),
+                      entry['custom'],
+                      (entry['duplicateOf'] if entry.key?('duplicateOf')),
+                      DateTime.iso8601(entry['completedOn'])
+          end
+        end
 
         Job.new overview, entries
       end
