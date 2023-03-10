@@ -153,7 +153,7 @@ job = verifalia.email_validations.submit entries, deduplication: 'Relaxed'
 #### Data retention
 
 Verifalia automatically deletes completed email verification jobs according to the data retention
-policy defined at the account level, which can be eventually overriden at the user level: one can
+policy defined at the account level, which can be eventually overridden at the user level: one can
 use the [Verifalia clients area](https://verifalia.com/client-area) to configure these settings.
 
 It is also possible to specify a per-job data retention policy which govern the time to live of a submitted

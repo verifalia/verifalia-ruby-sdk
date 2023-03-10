@@ -1,10 +1,11 @@
 module Verifalia
   module Credits
     class Balance
+      def self.from_json: (Hash[String, untyped]) -> Balance
+
       attr_reader credit_packs: BigDecimal
       attr_reader free_credits: BigDecimal | nil
       attr_reader free_credits_reset_in: String | nil
-
     end
   end
 end
