@@ -5,6 +5,7 @@ module Verifalia
     @base_urls: Array[String]
     @rest_client: Rest::Client
 
+    attr_reader credits: Credits::Client
     attr_reader email_validations: EmailValidations::Client
   end
 end

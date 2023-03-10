@@ -1,0 +1,7 @@
+module Verifalia
+  module Credits
+    class Client
+      def get_balance: -> Balance
+    end
+  end
+end

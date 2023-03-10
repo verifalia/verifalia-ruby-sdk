@@ -4,6 +4,7 @@ require 'openssl/x509'
 require_relative './rest/client'
 
 module Verifalia
+  # HTTPS-based REST client for Verifalia.
   class Client
     # The version of the Verifalia SDK for Ruby.
     VERSION = '2.0.0-beta'
@@ -11,9 +12,14 @@ module Verifalia
     # Allows to verify email addresses and manage email verification jobs using the Verifalia service.
     attr_reader :email_validations
 
+    # Manages credit packs, daily free credits and usage consumption for the Verifalia account.
+    attr_reader :credits
+
     # Initializes a new HTTPS-based REST client for Verifalia with the specified options.
     def initialize(authenticator: nil, username: nil, password: nil, ssl_client_cert: nil, ssl_client_key: nil, base_urls: nil, logger: nil)
       @base_urls = base_urls
+
+      # Initialize the authenticator this client will use while connecting to the Verifalia API
 
       if !authenticator.nil?
         @authenticator = authenticator
@@ -33,7 +39,10 @@ module Verifalia
 
       @rest_client.logger = logger
 
+      # Initialize the underlying resource clients
+
       @email_validations = Verifalia::EmailValidations::Client.new(@rest_client)
+      @credits = Verifalia::Credits::Client.new(@rest_client)
     end
   end
 end
