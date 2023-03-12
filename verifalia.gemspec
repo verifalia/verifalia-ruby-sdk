@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
 
   spec.extra_rdoc_files = ['README.md']
 
-  spec.add_dependency('faraday', '>= 2.7.4')
+  spec.add_dependency('faraday', '~> 2.7')
 
   spec.add_development_dependency 'bundler', '~> 2.4.8'
   spec.add_development_dependency 'rake'

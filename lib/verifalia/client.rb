@@ -7,7 +7,7 @@ module Verifalia
   # HTTPS-based REST client for Verifalia.
   class Client
     # The version of the Verifalia SDK for Ruby.
-    VERSION = '2.0.0-beta'
+    VERSION = '2.0.0'
 
     # Allows to verify email addresses and manage email verification jobs using the Verifalia service.
     attr_reader :email_validations
