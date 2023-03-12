@@ -10,7 +10,7 @@ module Verifalia
       def self.no_wait: -> WaitOptions
 
       attr_reader poll_wait_time: Integer
-      attr_reader progress: ^(Overview) -> void
+      attr_reader progress: (^(Overview) -> void) | nil
       attr_reader submission_wait_time: Integer
 
       def initialize: (Integer, Integer) -> WaitOptions

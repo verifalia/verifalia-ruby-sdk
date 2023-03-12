@@ -7,6 +7,31 @@
 real-time** and checking whether they are deliverable or not; this SDK library integrates with Verifalia
 and allows to [verify email addresses](https://verifalia.com/) in **Ruby 2.6.0 or higher**.
 
+To learn more about Verifalia please see [https://verifalia.com](https://verifalia.com/)
+
+## Table of contents
+
+- [Adding Verifalia to your Ruby app](#adding-verifalia-to-your-ruby-app)
+  * [Authentication](#authentication)
+    + [Authenticating via X.509 client certificate (TLS mutual authentication)](#authenticating-via-x509-client-certificate--tls-mutual-authentication-)
+- [Validating email addresses](#validating-email-addresses)
+  * [How to validate an email address](#how-to-validate-an-email-address)
+  * [How to validate a list of email addresses](#how-to-validate-a-list-of-email-addresses)
+  * [Processing options](#processing-options)
+    + [Quality level](#quality-level)
+    + [Deduplication mode](#deduplication-mode)
+    + [Data retention](#data-retention)
+  * [Wait options](#wait-options)
+    + [Avoid waiting](#avoid-waiting)
+    + [Progress tracking](#progress-tracking)
+  * [Completion callbacks](#completion-callbacks)
+  * [Retrieving jobs](#retrieving-jobs)
+  * [Exporting email verification results in different output formats](#exporting-email-verification-results-in-different-output-formats)
+  * [Don't forget to clean up, when you are done](#don-t-forget-to-clean-up--when-you-are-done)
+- [Managing credits](#managing-credits)
+  * [Getting the credits balance](#getting-the-credits-balance)
+- [Changelog / What's new](#changelog---what-s-new)
+
 ## Adding Verifalia to your Ruby app
 
 To install using [Bundler](https://bundler.io/) grab the latest version:
@@ -261,6 +286,30 @@ job_id = 'ec415ecd-0d0b-49c4-a5f0-f35c182e40ea'
 job = verifalia.email_validations.get job_id
 ```
 
+### Exporting email verification results in different output formats
+
+This library also allows to export the entries of a completed email validation
+job in different output formats through the `export()` method, with the goal of
+generating a human-readable representation of the verification results.
+
+> **WARNING**: While the output schema (columns / labels / data format) is fairly
+> complete, you should always consider it as subject to change: use the `get()`
+> method instead if you need to rely on a stable output schema.
+
+Here is an example showing how to export a given email verification job as an
+Excel (xslx) file:
+
+```ruby
+job_id = 'ec415ecd-0d0b-49c4-a5f0-f35c182e40ea'
+format = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+data = verifalia.email_validations.export job_id, format
+
+File.open('./export.xlsx', 'wb') do |fp|
+  fp.write(data)
+end
+```
+
 ### Don't forget to clean up, when you are done
 
 Verifalia automatically deletes completed jobs after a configurable
@@ -306,11 +355,12 @@ please see the [project releases](https://github.com/verifalia/verifalia-ruby-sd
 
 ### v2.0
 
-Released on TBD, 2023
+Released on March 12<sup>th</sup>, 2023
 
 - Added support for API v2.4
 - Added support for new completion callback options
 - Added support for specifying a custom wait time while submitting and retrieving email verification jobs
+- Added support for exporting completed email verification jobs in different output formats (CSV, Excel, Excel 97-2003)
 - Breaking change: the default job submission and retrieval behavior is now to wait for the completion
   of jobs (but it is possible to change that through the new `WaitOptions` class)
 - Bumped dependencies
