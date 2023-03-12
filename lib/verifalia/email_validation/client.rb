@@ -42,7 +42,7 @@ module Verifalia
         # Determine how to handle the submission, based on the type of the argument
 
         if data.nil?
-          raise "data can't be nil."
+          raise ArgumentError, 'data can\'t be nil.'
         elsif data.is_a?(String)
           data = Request.new [(RequestEntry.new data)],
                              quality: quality
@@ -58,11 +58,11 @@ module Verifalia
             when Hash
               # data is an Array[{ :inputData, :custom }]
 
-              raise 'Input hash must have an :inputData key.' unless entry.key?(:input_data)
+              raise ArgumentError, 'Input hash must have an :inputData key.' unless entry.key?(:input_data)
 
               RequestEntry.new entry[:input_data], entry[:custom]
             else
-              raise 'Cannot map input data.'
+              raise ArgumentError, 'Cannot map input data.'
             end
           end
 
@@ -72,7 +72,7 @@ module Verifalia
           data = Request.new data,
                              quality: quality
         elsif !data.is_a?(Request)
-          raise "Unsupported data type #{data.class}"
+          raise ArgumentError, "Unsupported data type #{data.class}"
         end
 
         # Completion callback
@@ -124,9 +124,9 @@ module Verifalia
         if response.status == 202 || response.status == 200
           job = Job.from_json(JSON.parse(response.body))
 
-          return job if wait_options_or_default == WaitOptions.no_wait || job.overview.status == 'Completed'
+          return job if wait_options_or_default == WaitOptions.no_wait || response.status == 200
 
-          return wait_for_completion(job, wait_options_or_default)
+          return get(job.overview.id, wait_options: wait_options_or_default)
         end
 
         raise "Unexpected HTTP response: #{response.status} #{response.body}"
@@ -142,23 +142,31 @@ module Verifalia
       def get(id, wait_options: nil)
         wait_options_or_default = wait_options.nil? ? WaitOptions.default : wait_options
 
-        response = @rest_client.invoke 'get',
-                                       "email-validations/#{id}?waitTime=#{wait_options_or_default.poll_wait_time}"
+        loop do
+          response = @rest_client.invoke 'get',
+                                         "email-validations/#{id}?waitTime=#{wait_options_or_default.poll_wait_time}"
 
-        return nil if response.status == 404 || response.status == 410
+          return nil if response.status == 404 || response.status == 410
 
-        if response.status == 202 || response.status == 200
+          unless response.status == 202 || response.status == 200
+            raise "Unexpected HTTP response: #{response.status} #{response.body}"
+          end
+
           job = Job.from_json(JSON.parse(response.body))
 
-          return job if wait_options_or_default == WaitOptions.no_wait || job.overview.status == 'Completed'
+          return job if wait_options_or_default == WaitOptions.no_wait || response.status == 200
 
-          return wait_for_completion(job, wait_options_or_default)
+          # Fires a progress, since we are not yet completed
+
+          wait_options.progress&.call(job.overview)
+
+          # Wait for the next polling schedule
+
+          wait_options.wait_for_next_poll(job)
         end
-
-        raise "Unexpected HTTP response: #{response.status} #{response.body}"
       end
 
-      # Exports the validated entries for a given validation job using the specified output format.
+      # Exports the validated entries for a completed email validation job, using the specified output format.
       #
       # Supported formats:
       # - +text/csv+: Comma-Separated Values (CSV)
@@ -193,25 +201,6 @@ module Verifalia
         return if response.status == 200 || response.status == 410
 
         raise "Unexpected HTTP response: #{response.status} #{response.body}"
-      end
-
-      private
-
-      def wait_for_completion(job, wait_options)
-        loop do
-          # Fires a progress, since we are not yet completed
-
-          wait_options.progress&.call(job.overview)
-
-          # Wait for the next polling schedule
-
-          wait_options.wait_for_next_poll(job)
-
-          job = get(job.overview.id, wait_options: wait_options)
-
-          return nil if job.nil?
-          return job unless job.overview.status == 'InProgress'
-        end
       end
     end
   end
