@@ -1,0 +1,9 @@
+module Verifalia
+  module EmailValidations
+    module ExportedEntriesFormat
+      CSV: String
+      EXCEL_XLS: String
+      EXCEL_XLSX: String
+    end
+  end
+end

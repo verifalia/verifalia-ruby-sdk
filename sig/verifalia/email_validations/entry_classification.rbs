@@ -1,0 +1,10 @@
+module Verifalia
+  module EmailValidations
+    module EntryClassification
+      DELIVERABLE: String
+      RISKY: String
+      UNDELIVERABLE: String
+      UNKNOWN: String
+    end
+  end
+end

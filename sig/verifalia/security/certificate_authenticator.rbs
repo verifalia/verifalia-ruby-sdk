@@ -1,0 +1,8 @@
+module Verifalia
+  module Security
+    class CertificateAuthenticator
+      @ssl_client_cert: String | OpenSSL::X509::Certificate
+      @ssl_client_key: String | OpenSSL::PKey::RSA
+    end
+  end
+end

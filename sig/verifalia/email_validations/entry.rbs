@@ -1,6 +1,7 @@
 module Verifalia
   module EmailValidations
     class Entry
+      attr_reader ascii_email_address_domain_part: String | nil
       attr_reader completed_on: DateTime
       attr_reader custom: String | nil
       attr_reader duplicate_of: Integer | nil
@@ -16,6 +17,7 @@ module Verifalia
       attr_reader is_free_email_address: bool | nil
       attr_reader is_role_account: bool | nil
       attr_reader status: String
+      attr_reader suggestions: [String]
       attr_reader syntax_failure_index: Integer | nil
     end
   end

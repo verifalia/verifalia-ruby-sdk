@@ -30,21 +30,20 @@
 # THE SOFTWARE.
 
 module Verifalia
-  module Security
-    # Allows to authenticate to Verifalia with a client certificate.
-    class CertificateAuthenticator
-      def initialize(ssl_client_cert, ssl_client_key)
-        ssl_client_cert = OpenSSL::X509::Certificate.new(File.read(ssl_client_cert)) if ssl_client_cert.is_a?(String)
-        ssl_client_key = OpenSSL::PKey::RSA.new(File.read(ssl_client_key)) if ssl_client_key.is_a?(String) && !ssl_client_key.nil?
+  module EmailValidations
+    # Provides values for the supported validation statuses for a job +entry+.
+    module EntryClassification
+      # An +entry+ marked as +Deliverable+ refers to an email which is deliverable.
+      DELIVERABLE = 'Deliverable'
 
-        @ssl_client_cert = ssl_client_cert
-        @ssl_client_key = ssl_client_key
-      end
+      # An +entry+ marked as +Risky+ refers to an email which could be no longer valid.
+      RISKY = 'Risky'
 
-      def authenticate(connection, request)
-        connection.ssl.client_cert = @ssl_client_cert
-        connection.ssl.client_key = @ssl_client_key
-      end
+      # An +entru+ marked as +Undeliverable+ refers to an email which is either invalid or no longer deliverable.
+      UNDELIVERABLE = 'Undeliverable'
+
+      # An +entry+ marked as +Unknown+ contains an email address whose deliverability is unknown.
+      UNKNOWN = 'Unknown'
     end
   end
 end

@@ -1,0 +1,10 @@
+module Verifalia
+  module EmailValidations
+    module JobStatus
+      COMPLETED: String
+      DELETED: String
+      EXPIRED: String
+      IN_PROGRESS: String
+    end
+  end
+end

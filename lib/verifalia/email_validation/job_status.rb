@@ -30,21 +30,20 @@
 # THE SOFTWARE.
 
 module Verifalia
-  module Security
-    # Allows to authenticate to Verifalia with a client certificate.
-    class CertificateAuthenticator
-      def initialize(ssl_client_cert, ssl_client_key)
-        ssl_client_cert = OpenSSL::X509::Certificate.new(File.read(ssl_client_cert)) if ssl_client_cert.is_a?(String)
-        ssl_client_key = OpenSSL::PKey::RSA.new(File.read(ssl_client_key)) if ssl_client_key.is_a?(String) && !ssl_client_key.nil?
+  module EmailValidations
+    # Provides values for the supported statuses for a +job+.
+    module JobStatus
+      # The email validation job has been completed and its results are available.
+      COMPLETED = 'Completed'
 
-        @ssl_client_cert = ssl_client_cert
-        @ssl_client_key = ssl_client_key
-      end
+      # The email validation job has either been deleted.
+      DELETED = 'Deleted'
 
-      def authenticate(connection, request)
-        connection.ssl.client_cert = @ssl_client_cert
-        connection.ssl.client_key = @ssl_client_key
-      end
+      # The email validation job is expired.
+      EXPIRED = 'Expired'
+
+      # The email validation job is being processed by Verifalia.
+      IN_PROGRESS = 'InProgress'
     end
   end
 end

@@ -1,17 +1,47 @@
 # frozen_string_literal: true
 
+# Verifalia - Email list cleaning and real-time email verification service
+# https://verifalia.com/
+# support@verifalia.com
+#
+# Copyright (c) 2005-2024 Cobisi Research
+#
+# Cobisi Research
+# Via Della Costituzione, 31
+# 35010 Vigonza
+# Italy - European Union
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
 module Verifalia
   module EmailValidations
+    # Represents a single validated entry within a job.
     class Entry
       # The input string being validated.
       attr_reader :input_data
 
-      # The classification for the status of this email address.
-      #
-      # Standard values include +Deliverable+, +Risky+, +Undeliverable+ and +Unknown+.
+      # The classification for the status of this email address. See +EntryClassification+ for a list of the values
+      # supported at the time this SDK has been released.
       attr_reader :classification
 
-      # The validation status for this entry.
+      # The validation status for this entry. See +EntryStatus+ for a list of the values supported at the time this SDK
+      # has been released.
       attr_reader :status
 
       # Gets the email address, without any eventual comment or folding white space. Returns +nil+ if the input data
@@ -64,9 +94,13 @@ module Verifalia
       # The date this entry has been completed, if available.
       attr_reader :completed_on
 
+      # The potential corrections for the input data, in the event Verifalia identified potential typos during the verification process.
+      attr_reader :suggestions
+
       def initialize (input_data, classification, status, email_address, email_address_local_part, email_address_domain_part,
                       has_international_mailbox_name, has_international_domain_name, is_disposable_email_address, is_role_account,
-                      is_free_email_address, syntax_failure_index, custom, duplicate_of, completed_on, ascii_email_address_domain_part)
+                      is_free_email_address, syntax_failure_index, custom, duplicate_of, completed_on, ascii_email_address_domain_part,
+                      suggestions)
         @input_data = input_data
         @classification = classification
         @status = status
@@ -83,6 +117,7 @@ module Verifalia
         @duplicate_of = duplicate_of
         @completed_on = completed_on
         @ascii_email_address_domain_part = ascii_email_address_domain_part
+        @suggestions = suggestions
       end
     end
   end
